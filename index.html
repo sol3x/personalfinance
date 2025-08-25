@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اپلیکیشن حسابداری شخصی (نسخه ۴.۱ - رفع اشکال حذف)</title>
+    <!-- Persian Datepicker CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+    <style>
+        /* --- Import Font --- */
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
+
+        /* --- CSS Variables for Theming --- */
+        :root {
+            --font-family-base: 'Vazirmatn', sans-serif;
+            --primary-color: #4a90e2;
+            --primary-hover: #357abd;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --input-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --border-color: #444;
+            --input-bg: #2a2a2a;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        /* --- General Styles --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        #theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        #theme-toggle:hover {
+            transform: scale(1.1);
+            background-color: var(--bg-color);
+        }
+
+        /* --- Main Layout --- */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media (min-width: 992px) {
+            .main-layout {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        /* --- Cards & Sections --- */
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        /* --- Chart Container --- */
+        #chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-family-base);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        .btn-block {
+            width: 100%;
+            text-align: center;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        /* --- Forms --- */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-family: var(--font-family-base);
+        }
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 0.75rem center;
+            background-size: 16px 12px;
+            padding-left: 2.5rem;
+        }
+        body.dark-mode select.form-control {
+             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e0e0e0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        }
+
+        /* --- Accounts Section --- */
+        #accounts-list .account-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #accounts-list .account-item:last-child {
+            border-bottom: none;
+        }
+        .account-balance {
+            font-weight: bold;
+        }
+        .balance-positive { color: var(--success-color); }
+        .balance-negative { color: var(--danger-color); }
+
+        /* --- Transactions List --- */
+        #transactions-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .transaction-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+        }
+        .transaction-item:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+        body.dark-mode .transaction-item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+        .transaction-income .transaction-icon { background-color: var(--success-color); }
+        .transaction-expense .transaction-icon { background-color: var(--danger-color); }
+
+        .transaction-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .transaction-category {
+            font-weight: bold;
+        }
+        .transaction-account {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .transaction-description {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+
+        /* --- Modal --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 10% auto;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-width: 500px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover, .close-btn:focus {
+            color: var(--text-color);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-50px); } to { transform: translateY(0); } }
+
+        /* Utility Classes */
+        .d-flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .align-center { align-items: center; }
+        .mt-2 { margin-top: 1rem; }
+        .text-left { text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>حسابداری شخصی</h1>
+            <button id="theme-toggle" title="تغییر تم">🌙</button>
+        </header>
+
+        <div class="main-layout">
+            <!-- Sidebar / Left Column -->
+            <aside>
+                <div class="card">
+                    <h2>افزودن تراکنش</h2>
+                    <form id="transaction-form">
+                        <div class="form-group">
+                            <label for="type">نوع</label>
+                            <select id="type" class="form-control" required>
+                                <option value="expense">هزینه</option>
+                                <option value="income">درآمد</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">مبلغ (تومان)</label>
+                            <input type="number" id="amount" class="form-control" placeholder="مثال: 50000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">دسته‌بندی</label>
+                            <select id="category" class="form-control" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="account">حساب</label>
+                            <select id="account" class="form-control" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">تاریخ</label>
+                            <input type="text" id="date-picker" class="form-control" required autocomplete="off">
+                            <!-- Hidden input to store the standard date format -->
+                            <input type="hidden" id="date-picker-alt">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">توضیحات (اختیاری)</label>
+                            <input type="text" id="description" class="form-control" placeholder="مثال: خرید نان">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">ثبت تراکنش</button>
+                    </form>
+                </div>
+                <div class="card mt-2">
+                    <h2>مدیریت</h2>
+                    <button id="manage-accounts-btn" class="btn btn-primary btn-block">مدیریت حساب‌ها</button>
+                    <button id="manage-categories-btn" class="btn btn-primary btn-block mt-2">مدیریت دسته‌بندی‌ها</button>
+                    <button id="export-data-btn" class="btn btn-primary btn-block mt-2">خروجی گرفتن (Export)</button>
+                    <button id="import-data-btn" class="btn btn-primary btn-block mt-2">درون‌ریزی (Import)</button>
+                    <input type="file" id="import-file-input" style="display: none;" accept=".json">
+                </div>
+            </aside>
+
+            <!-- Main Content / Right Column -->
+            <main>
+                <div class="card">
+                    <h2>خلاصه وضعیت</h2>
+                    <div id="summary" class="d-flex justify-between" style="flex-wrap: wrap; gap: 10px;">
+                         <p>درآمد کل: <span id="total-income" class="balance-positive">۰</span></p>
+                         <p>هزینه کل: <span id="total-expense" class="balance-negative">۰</span></p>
+                         <p>موجودی کل: <span id="total-balance">۰</span></p>
+                    </div>
+                </div>
+                <div class="card mt-2">
+                    <h2>گزارش هزینه‌ها</h2>
+                    <div id="chart-container">
+                        <canvas id="expense-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card mt-2">
+                    <h2>آخرین تراکنش‌ها</h2>
+                    <div id="transactions-container">
+                        <!-- Transaction items will be injected here by JS -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="accounts-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>مدیریت حساب‌ها</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div id="accounts-list"></div>
+            <form id="add-account-form" class="mt-2">
+                <div class="d-flex" style="gap: 10px;">
+                    <input type="text" id="new-account-name" class="form-control" placeholder="نام حساب جدید" required>
+                    <input type="number" id="new-account-balance" class="form-control" placeholder="موجودی اولیه" required>
+                    <button type="submit" class="btn btn-primary">افزودن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="categories-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>مدیریت دسته‌بندی‌ها</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div id="categories-list"></div>
+            <form id="add-category-form" class="mt-2">
+                 <div class="d-flex" style="gap: 10px;">
+                    <input type="text" id="new-category-name" class="form-control" placeholder="نام دسته‌بندی جدید" required>
+                     <select id="new-category-type" class="form-control">
+                         <option value="expense">هزینه</option>
+                         <option value="income">درآمد</option>
+                     </select>
+                    <button type="submit" class="btn btn-primary">افزودن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // --- DATABASE LOGIC (IndexedDB) ---
+            const DB_NAME = 'PersonalFinanceDB_v1';
+            const DB_VERSION = 1;
+            let db;
+
+            function initDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                    request.onupgradeneeded = (event) => {
+                        db = event.target.result;
+                        if (!db.objectStoreNames.contains('accounts')) {
+                            db.createObjectStore('accounts', { keyPath: 'id', autoIncrement: true });
+                        }
+                        if (!db.objectStoreNames.contains('categories')) {
+                            db.createObjectStore('categories', { keyPath: 'id', autoIncrement: true });
+                        }
+                        if (!db.objectStoreNames.contains('transactions')) {
+                            const transactionStore = db.createObjectStore('transactions', { keyPath: 'id', autoIncrement: true });
+                            transactionStore.createIndex('date', 'date', { unique: false });
+                        }
+                    };
+
+                    request.onsuccess = (event) => {
+                        db = event.target.result;
+                        console.log('Database initialized successfully.');
+                        resolve(db);
+                    };
+
+                    request.onerror = (event) => {
+                        console.error('Database error:', event.target.error);
+                        reject('Error opening database.');
+                    };
+                });
+            }
+
+            // *** FIX: Corrected the dbAction function to handle get/delete properly ***
+            function dbAction(storeName, mode, action, data) {
+                return new Promise((resolve, reject) => {
+                    if (!db) {
+                        reject("Database not initialized.");
+                        return;
+                    }
+                    const transaction = db.transaction(storeName, mode);
+                    const store = transaction.objectStore(storeName);
+                    let request;
+
+                    switch (action) {
+                        case 'add': request = store.add(data); break;
+                        case 'put': request = store.put(data); break;
+                        case 'delete': request = store.delete(data); break; // 'data' is the key
+                        case 'get': request = store.get(data); break; // 'data' is the key
+                        case 'getAll': request = store.getAll(); break;
+                        case 'clear': request = store.clear(); break;
+                        default: reject('Invalid action'); return;
+                    }
+
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(`DB action failed: ${event.target.error}`);
+                });
+            }
+
+            // --- UI ELEMENTS ---
+            const themeToggle = $('#theme-toggle');
+            const transactionForm = $('#transaction-form');
+            const transactionsContainer = $('#transactions-container');
+            const manageAccountsBtn = $('#manage-accounts-btn');
+            const manageCategoriesBtn = $('#manage-categories-btn');
+            const accountsModal = $('#accounts-modal');
+            const categoriesModal = $('#categories-modal');
+            const addAccountForm = $('#add-account-form');
+            const addCategoryForm = $('#add-category-form');
+            const accountsListDiv = $('#accounts-list');
+            const categoriesListDiv = $('#categories-list');
+            const categorySelect = $('#category');
+            const accountSelect = $('#account');
+            const typeSelect = $('#type');
+            
+            const totalIncomeEl = $('#total-income');
+            const totalExpenseEl = $('#total-expense');
+            const totalBalanceEl = $('#total-balance');
+            
+            const expenseChartCanvas = $('#expense-chart');
+            let expenseChart = null; 
+            
+            const exportBtn = $('#export-data-btn');
+            const importBtn = $('#import-data-btn');
+            const importFileInput = $('#import-file-input');
+
+
+            // --- APP LOGIC ---
+            
+            // Initialize Persian Date Picker
+            const datePicker = $("#date-picker").pDatepicker({
+                format: "YYYY/MM/DD",
+                autoClose: true,
+                observer: true,
+                altField: '#date-picker-alt',
+                altFormat: 'X', // Unix timestamp
+                initialValue: true,
+                initialValueType: 'persian'
+            });
+
+            // Theme switcher logic
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark') {
+                $('body').addClass('dark-mode');
+                themeToggle.text('☀️');
+            }
+            themeToggle.on('click', () => {
+                $('body').toggleClass('dark-mode');
+                let theme = 'light';
+                if ($('body').hasClass('dark-mode')) {
+                    theme = 'dark';
+                    themeToggle.text('☀️');
+                } else {
+                    themeToggle.text('🌙');
+                }
+                localStorage.setItem('theme', theme);
+                renderExpenseChart();
+            });
+
+            // Modal handling
+            function setupModal(modal, btn) {
+                const closeBtn = modal.find('.close-btn');
+                btn.on('click', () => modal.show());
+                closeBtn.on('click', () => modal.hide());
+                $(window).on('click', (event) => {
+                    if ($(event.target).is(modal)) {
+                        modal.hide();
+                    }
+                });
+            }
+            setupModal(accountsModal, manageAccountsBtn);
+            setupModal(categoriesModal, manageCategoriesBtn);
+            
+            function formatCurrency(num) {
+                return new Intl.NumberFormat('fa-IR').format(num) + ' تومان';
+            }
+
+            // Render functions
+            async function renderAccounts(populateSelects = true) {
+                const accounts = await dbAction('accounts', 'readonly', 'getAll');
+                accountsListDiv.html('');
+                if(populateSelects) accountSelect.html('');
+
+                accounts.forEach(acc => {
+                    const balanceClass = acc.balance >= 0 ? 'balance-positive' : 'balance-negative';
+                    const accountItem = `
+                        <div class="account-item" data-id="${acc.id}">
+                            <span>${acc.name}</span>
+                            <span class="account-balance ${balanceClass}">${formatCurrency(acc.balance)}</span>
+                            <button class="btn btn-danger btn-sm delete-account-btn">حذف</button>
+                        </div>
+                    `;
+                    accountsListDiv.append(accountItem);
+                    
+                    if(populateSelects) {
+                        const option = $('<option></option>').val(acc.id).text(acc.name);
+                        accountSelect.append(option);
+                    }
+                });
+            }
+
+            async function renderCategories(populateSelects = true) {
+                const categories = await dbAction('categories', 'readonly', 'getAll');
+                categoriesListDiv.html('');
+                if(populateSelects) categorySelect.html('');
+                
+                const selectedType = typeSelect.val();
+
+                categories.forEach(cat => {
+                    const categoryItem = `
+                        <div class="account-item" data-id="${cat.id}">
+                            <span>${cat.name} (${cat.type === 'income' ? 'درآمد' : 'هزینه'})</span>
+                            <button class="btn btn-danger btn-sm delete-category-btn">حذف</button>
+                        </div>
+                    `;
+                    categoriesListDiv.append(categoryItem);
+                    
+                    if(populateSelects && cat.type === selectedType) {
+                        const option = $('<option></option>').val(cat.id).text(cat.name);
+                        categorySelect.append(option);
+                    }
+                });
+            }
+            
+            typeSelect.on('change', () => renderCategories());
+
+            async function renderTransactions() {
+                const transactions = (await dbAction('transactions', 'readonly', 'getAll')).sort((a,b) => new Date(b.date) - new Date(a.date));
+                const accounts = await dbAction('accounts', 'readonly', 'getAll');
+                const categories = await dbAction('categories', 'readonly', 'getAll');
+                
+                const accountMap = new Map(accounts.map(a => [a.id, a.name]));
+                const categoryMap = new Map(categories.map(c => [c.id, c.name]));
+
+                transactionsContainer.html(transactions.length ? '' : '<p>هیچ تراکنشی ثبت نشده است.</p>');
+
+                transactions.forEach(t => {
+                    const typeClass = `transaction-${t.type}`;
+                    const icon = t.type === 'income' ? '➕' : '➖';
+                    const amountSign = t.type === 'income' ? '+' : '-';
+                    
+                    const transactionItem = `
+                        <div class="transaction-item ${typeClass}" data-id="${t.id}">
+                            <div class="transaction-icon">${icon}</div>
+                            <div class="transaction-details">
+                                <span class="transaction-category">${categoryMap.get(t.categoryId) || 'حذف شده'}</span>
+                                <span class="transaction-account">${accountMap.get(t.accountId) || 'حذف شده'} - ${new Date(t.date).toLocaleDateString('fa-IR')}</span>
+                                ${t.description ? `<span class="transaction-description">${t.description}</span>` : ''}
+                            </div>
+                            <div class="transaction-amount text-left">
+                                ${amountSign}${formatCurrency(t.amount)}
+                                <button class="btn btn-danger btn-sm delete-transaction-btn mt-2">حذف</button>
+                            </div>
+                        </div>
+                    `;
+                    transactionsContainer.append(transactionItem);
+                });
+                updateSummary();
+            }
+
+            async function updateSummary() {
+                const transactions = await dbAction('transactions', 'readonly', 'getAll');
+                const accounts = await dbAction('accounts', 'readonly', 'getAll');
+
+                const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+                const totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+                const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
+
+                totalIncomeEl.text(formatCurrency(totalIncome));
+                totalExpenseEl.text(formatCurrency(totalExpense));
+                totalBalanceEl.text(formatCurrency(totalBalance));
+                totalBalanceEl.removeClass('balance-positive balance-negative').addClass(totalBalance >= 0 ? 'balance-positive' : 'balance-negative');
+            }
+
+            async function renderExpenseChart() {
+                const transactions = await dbAction('transactions', 'readonly', 'getAll');
+                const categories = await dbAction('categories', 'readonly', 'getAll');
+                const categoryMap = new Map(categories.map(c => [c.id, c.name]));
+
+                const expenseData = transactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((acc, t) => {
+                        const categoryName = categoryMap.get(t.categoryId) || 'نامشخص';
+                        acc[categoryName] = (acc[categoryName] || 0) + t.amount;
+                        return acc;
+                    }, {});
+
+                const labels = Object.keys(expenseData);
+                const data = Object.values(expenseData);
+
+                if (expenseChart) {
+                    expenseChart.destroy();
+                }
+                
+                const isDarkMode = $('body').hasClass('dark-mode');
+                const textColor = isDarkMode ? '#e0e0e0' : '#212529';
+
+                if(labels.length === 0) {
+                     expenseChartCanvas.hide();
+                     return;
+                }
+                expenseChartCanvas.show();
+
+                expenseChart = new Chart(expenseChartCanvas[0], {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'هزینه‌ها',
+                            data: data,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'
+                            ],
+                            borderColor: isDarkMode ? '#1e1e1e' : '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: textColor,
+                                    font: { family: "'Vazirmatn', sans-serif" }
+                                }
+                            },
+                            tooltip: {
+                                bodyFont: { family: "'Vazirmatn', sans-serif" },
+                                titleFont: { family: "'Vazirmatn', sans-serif" },
+                                callbacks: {
+                                     label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += formatCurrency(context.parsed);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Event Handlers
+            transactionForm.on('submit', async (e) => {
+                e.preventDefault();
+                const timestamp = parseInt($('#date-picker-alt').val());
+                if(!timestamp) {
+                    alert('لطفاً تاریخ را انتخاب کنید.');
+                    return;
+                }
+
+                const newTransaction = {
+                    type: $('#type').val(),
+                    amount: parseFloat($('#amount').val()),
+                    categoryId: parseInt($('#category').val()),
+                    accountId: parseInt($('#account').val()),
+                    date: new Date(timestamp * 1000).toISOString(),
+                    description: $('#description').val(),
+                };
+                
+                if (isNaN(newTransaction.amount) || newTransaction.amount <= 0 || isNaN(newTransaction.categoryId) || isNaN(newTransaction.accountId)) {
+                    alert('لطفاً تمام فیلدهای لازم را به درستی پر کنید.');
+                    return;
+                }
+
+                await dbAction('transactions', 'readwrite', 'add', newTransaction);
+
+                const account = await dbAction('accounts', 'readonly', 'get', newTransaction.accountId);
+                if (newTransaction.type === 'income') {
+                    account.balance += newTransaction.amount;
+                } else {
+                    account.balance -= newTransaction.amount;
+                }
+                await dbAction('accounts', 'readwrite', 'put', account);
+                
+                transactionForm[0].reset();
+                datePicker.setDate(new Date().getTime());
+                await renderAll();
+            });
+
+            addAccountForm.on('submit', async (e) => {
+                e.preventDefault();
+                const newAccount = {
+                    name: $('#new-account-name').val(),
+                    balance: parseFloat($('#new-account-balance').val()) || 0
+                };
+                await dbAction('accounts', 'readwrite', 'add', newAccount);
+                addAccountForm[0].reset();
+                await renderAccounts();
+            });
+
+            addCategoryForm.on('submit', async (e) => {
+                e.preventDefault();
+                const newCategory = {
+                    name: $('#new-category-name').val(),
+                    type: $('#new-category-type').val(),
+                };
+                await dbAction('categories', 'readwrite', 'add', newCategory);
+                addCategoryForm[0].reset();
+                await renderCategories();
+            });
+
+            // Deletion logic
+            $('body').on('click', '.delete-account-btn', async function() {
+                const accountId = parseInt($(this).closest('.account-item').data('id'));
+                if (confirm('آیا از حذف این حساب مطمئن هستید؟')) {
+                    await dbAction('accounts', 'readwrite', 'delete', accountId);
+                    await renderAll();
+                }
+            });
+            $('body').on('click', '.delete-category-btn', async function() {
+                const categoryId = parseInt($(this).closest('.account-item').data('id'));
+                if (confirm('آیا از حذف این دسته‌بندی مطمئن هستید؟')) {
+                    await dbAction('categories', 'readwrite', 'delete', categoryId);
+                    await renderAll();
+                }
+            });
+            $('body').on('click', '.delete-transaction-btn', async function() {
+                const transactionId = parseInt($(this).closest('.transaction-item').data('id'));
+                if (confirm('آیا از حذف این تراکنش مطمئن هستید؟')) {
+                    const transaction = await dbAction('transactions', 'readonly', 'get', transactionId);
+                    
+                    const account = await dbAction('accounts', 'readonly', 'get', transaction.accountId);
+                    if (account) {
+                        if (transaction.type === 'income') {
+                            account.balance -= transaction.amount;
+                        } else {
+                            account.balance += transaction.amount;
+                        }
+                        await dbAction('accounts', 'readwrite', 'put', account);
+                    }
+                    
+                    await dbAction('transactions', 'readwrite', 'delete', transactionId);
+                    await renderAll();
+                }
+            });
+
+            // Import/Export Logic
+            exportBtn.on('click', async () => {
+                try {
+                    const accounts = await dbAction('accounts', 'readonly', 'getAll');
+                    const categories = await dbAction('categories', 'readonly', 'getAll');
+                    const transactions = await dbAction('transactions', 'readonly', 'getAll');
+
+                    const dataToExport = { accounts, categories, transactions };
+                    const dataStr = JSON.stringify(dataToExport, null, 2);
+                    const blob = new Blob([dataStr], { type: 'application/json' });
+                    
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `personal_finance_backup_${new Date().toISOString().slice(0,10)}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (error) {
+                    console.error('Failed to export data:', error);
+                    alert('خطا در خروجی گرفتن اطلاعات.');
+                }
+            });
+
+            importBtn.on('click', () => {
+                importFileInput.click();
+            });
+
+            importFileInput.on('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (!importedData.accounts || !importedData.categories || !importedData.transactions) {
+                            throw new Error('فایل نامعتبر است.');
+                        }
+
+                        if (confirm('هشدار: با این کار تمام اطلاعات فعلی شما پاک و اطلاعات جدید جایگزین می‌شود. آیا مطمئن هستید؟')) {
+                            // Clear existing data
+                            await dbAction('transactions', 'readwrite', 'clear');
+                            await dbAction('categories', 'readwrite', 'clear');
+                            await dbAction('accounts', 'readwrite', 'clear');
+
+                            // Import new data
+                            for (const account of importedData.accounts) {
+                                await dbAction('accounts', 'readwrite', 'add', account);
+                            }
+                            for (const category of importedData.categories) {
+                                await dbAction('categories', 'readwrite', 'add', category);
+                            }
+                            for (const transaction of importedData.transactions) {
+                                await dbAction('transactions', 'readwrite', 'add', transaction);
+                            }
+
+                            alert('اطلاعات با موفقیت درون‌ریزی شد.');
+                            await renderAll();
+                        }
+                    } catch (error) {
+                        console.error('Failed to import data:', error);
+                        alert('خطا در درون‌ریزی اطلاعات. لطفاً از معتبر بودن فایل اطمینان حاصل کنید.');
+                    } finally {
+                        // Reset file input
+                        importFileInput.val('');
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // Initial Load
+            async function initializeApp() {
+                try {
+                    await initDB();
+                    
+                    const accountsCount = (await dbAction('accounts', 'readonly', 'getAll')).length;
+                    if (accountsCount === 0) {
+                        await dbAction('accounts', 'readwrite', 'add', { name: 'کیف پول', balance: 50000 });
+                        await dbAction('accounts', 'readwrite', 'add', { name: 'کارت بانکی', balance: 1000000 });
+                    }
+                    const categoriesCount = (await dbAction('categories', 'readonly', 'getAll')).length;
+                    if (categoriesCount === 0) {
+                        await dbAction('categories', 'readwrite', 'add', { name: 'خوراک', type: 'expense' });
+                        await dbAction('categories', 'readwrite', 'add', { name: 'حمل و نقل', type: 'expense' });
+                        await dbAction('categories', 'readwrite', 'add', { name: 'حقوق', type: 'income' });
+                    }
+
+                    await renderAll();
+                } catch (error) {
+                    console.error("Failed to initialize the app:", error);
+                    alert("خطا در بارگذاری برنامه. لطفاً کنسول را بررسی کنید.");
+                }
+            }
+            
+            async function renderAll() {
+                await renderAccounts();
+                await renderCategories();
+                await renderTransactions();
+                await renderExpenseChart();
+            }
+
+            initializeApp();
+        });
+    </script>
+</body>
+</html>
